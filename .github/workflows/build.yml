@@ -1,0 +1,78 @@
+name: Build GDExtension
+
+on:
+  push:
+    # Triggers release builds on version tags
+    tags:
+      - "v*"
+  # Allows manual triggering for testing without tagging
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build ${{ matrix.platform }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: windows
+            os: windows-latest
+            arch: x86_64
+          - platform: linux
+            os: ubuntu-latest
+            arch: x86_64
+          - platform: macos
+            os: macos-latest
+            arch: universal
+          - platform: android
+            os: ubuntu-latest
+            arch: arm64
+          - platform: ios
+            os: macos-latest
+            arch: arm64
+          - platform: web
+            os: ubuntu-latest
+            arch: wasm32
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Install SCons
+        run: pip install scons
+
+      - name: Setup Android NDK (Android Only)
+        if: matrix.platform == 'android'
+        # Godot requires the NDK path to be explicitly set. GitHub Actions runners have it pre-installed.
+        run: echo "ANDROID_NDK_ROOT=$ANDROID_NDK_LATEST_HOME" >> $GITHUB_ENV
+
+      - name: Setup Emscripten (Web Only)
+        if: matrix.platform == 'web'
+        uses: mymindstorm/setup-emsdk@v14
+        with:
+          # Godot 4 currently targets this specific emscripten version
+          version: 3.1.39
+          actions-cache-folder: "emsdk-cache"
+
+      - name: Build Debug Target
+        run: |
+          scons platform=${{ matrix.platform }} target=template_debug arch=${{ matrix.arch }}
+
+      - name: Build Release Target
+        run: |
+          scons platform=${{ matrix.platform }} target=template_release arch=${{ matrix.arch }}
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.platform }}-build
+          # Adjust this path if your SConstruct outputs to a different directory
+          path: bin/

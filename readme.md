@@ -1,234 +1,207 @@
-# Godot Advanced State Machine
+# GDExtension FSM Architecture
 
-A high-performance, production-ready **State Machine system for Godot 4.x**, designed for scalable gameplay architecture including **player controllers, combat systems, AI, and animation-driven logic**.
-
-This system provides a clean, modular, and extensible foundation for managing complex game behavior while remaining simple to use in everyday development.
+A high-performance, reusable Finite State Machine (FSM) architecture for Godot using GDExtension (C++) and GDScript.
 
 ---
 
-## 🚀 Features
+## Overview
 
-* **🔁 Data-Driven Transitions**
-  Transitions are not just strings—they support payloads and priorities:
+This system is designed to combine:
 
-  ```gdscript
-  transition_requested.emit("jump", {"force": 1.5}, 10)
-  ```
+- C++ performance for core systems such as state management, memory handling, and execution flow
+- GDScript flexibility for fast and intuitive gameplay logic
 
-  Pass contextual data like velocity, attack info, or direction seamlessly between states.
+The architecture follows a simple flat hierarchy consisting of:
 
----
+- A single Controller node
+- Multiple State nodes as its children
 
-* **🚫 Safe Transition Guards**
-  Prevent invalid or unwanted transitions using built-in guard functions:
-
-  * `can_enter(data)`
-  * `can_exit()`
-
-  Ensures states like attacks or knockbacks cannot be interrupted improperly.
+This design keeps the system easy to use, scalable, and efficient.
 
 ---
 
-* **⏱️ State Time Tracking**
-  Each state automatically tracks how long it has been active:
+## Architecture Summary
 
-  ```gdscript
-  if time_in_state > 0.2:
-      # allow jump apex logic
-  ```
-
----
-
-* **🔄 Transition Queue & Priority System**
-  Multiple transitions in a single frame are handled safely:
-
-  * Queued and resolved deterministically
-  * Priority-based selection prevents flickering bugs
+| Component           | Responsibility                          |
+| ------------------- | --------------------------------------- |
+| NodeState           | Base class for all states               |
+| NodeStateController | Manages state transitions and execution |
 
 ---
 
-* **📦 Context Injection (No Manual Wiring)**
-  Automatically inject a shared `context` (e.g., Player or Enemy) into all states:
+## Core Concepts
 
-  ```gdscript
-  var player := context as Player
-  ```
-
-  No more assigning references in the inspector for every state.
+- Only one state is active at a time
+- All states are direct children of the controller
+- State transitions are handled using signals
+- State lookup is optimized internally for fast switching
 
 ---
 
-* **🎯 Event System (Reactive Gameplay)**
-  Send external events directly into the state machine:
+## Core Classes
 
-  ```gdscript
-  state_machine.send_event("jump_pressed")
-  state_machine.send_event("damage_taken", {"amount": 10})
-  ```
+### NodeState
 
-  Enables clean input handling, AI reactions, and combat triggers.
+The base class that all states extend.
 
----
+- Acts as the interface between the engine and your gameplay logic
+- Designed to be extended in GDScript
+- Provides lifecycle hooks for entering, exiting, and updating states
 
-* **🧾 Debug-Friendly Design**
-  Easily track:
-
-  * Current state
-  * Previous state
-  * Time in state
-
-  Perfect for debugging complex gameplay logic.
+Each state is responsible only for its own behavior.
 
 ---
 
-## 📦 Installation
+### NodeStateController
 
-1. Download the latest release from the Releases page (or compile from source).
-2. Copy the addon folder into your Godot project:
+The central manager of the FSM.
 
-   ```
-   addons/cow_state_machine/
-   ```
-3. Enable the plugin in:
-
-   ```
-   Project Settings → Plugins
-   ```
-4. You can now use `NodeStateMachine` and `NodeState` in your scenes.
+- Keeps track of all available states
+- Controls which state is currently active
+- Handles transitions between states
+- Ensures only the active state is updated
 
 ---
 
-## 🛠️ Usage
+## Developer Workflow
 
-### 1. Setup
+### 1. Scene Setup
 
-1. Add a `NodeStateMachine` node to your scene
-2. Add child states (extending `NodeState`):
-
-   * `IdleState`
-   * `RunState`
-   * `JumpState`
+- Add a NodeStateController to your entity (player, enemy, etc.)
 
 ---
 
-### 2. Example State
+### 2. Create States
+
+- Add child Node nodes under the controller
+- Attach scripts that extend NodeState
+
+Example state names:
+
+- Idle
+- Walk
+- Jump
+
+---
+
+### 3. Assign Initial State
+
+- Select the controller node
+- Assign the initial state using the Inspector
+
+---
+
+### 4. Implement State Logic
+
+Example:
 
 ```gdscript
 extends NodeState
 
-func _on_enter(data := {}):
-    print("Entered Idle")
-
-func _on_process(delta):
+func _on_physics_process(delta):
     if Input.is_action_pressed("move"):
-        transition_requested.emit("run", {}, 0)
+        move_character(delta)
+    else:
+        transition.emit(&"idle")
+```
 
-func _on_exit():
-    print("Exiting Idle")
+States emit a transition signal to request a change. The controller handles the switch automatically.
+
+---
+
+## Performance Design
+
+- Only the active state is processed at runtime
+- No unnecessary updates on inactive states
+- Fast state switching through internal caching
+- Designed to scale efficiently for complex behaviors
+
+---
+
+## Build System (SCons)
+
+The project uses SCons for building the GDExtension.
+
+### Platform Support
+
+This system supports all platforms that Godot supports, including:
+
+- Windows
+- Linux
+- macOS
+- Android
+- iOS
+- Web
+
+---
+
+### Build Command
+
+```bash
+scons platform=<target_platform>
+```
+
+Examples:
+
+```bash
+scons platform=windows
+scons platform=linux
+```
+
+- Automatically configures the build for the target platform
+- Outputs compiled binaries to a shared bin directory
+- No code changes are required between platforms
+
+---
+
+## Future Expansion
+
+The current implementation is a flat FSM, but it is designed to support future expansion into hierarchical state machines.
+
+This would allow:
+
+- State machines inside other state machines
+- More complex and modular behavior systems
+
+Example structure:
+
+```
+Player FSM
+ └── Combat State (Controller)
+      ├── Attack
+      ├── Defend
 ```
 
 ---
 
-### 3. Sending Events
+## Key Benefits
 
-```gdscript
-state_machine.send_event("jump_pressed")
-```
-
-Inside a state:
-
-```gdscript
-func on_event(event: StringName, data: Dictionary):
-    if event == "jump_pressed":
-        transition_requested.emit("jump", {"force": 1.5}, 10)
-```
-
----
-
-### 4. Using Context
-
-```gdscript
-var player := context as Player
-player.velocity.y += 10
-```
-
----
-
-## 🔧 API Reference
-
-### `NodeState`
-
-Base class for all states.
-
-| Method                       | Description                      |
-| ---------------------------- | -------------------------------- |
-| `_on_enter(data)`            | Called when entering the state   |
-| `_on_exit()`                 | Called when exiting the state    |
-| `_on_process(delta)`         | Called every frame               |
-| `_on_physics_process(delta)` | Called every physics frame       |
-| `can_enter(data)`            | Whether the state can be entered |
-| `can_exit()`                 | Whether the state can be exited  |
-| `on_event(event, data)`      | Handle external events           |
-
----
-
-### `NodeStateMachine`
-
-Main controller node.
-
-| Method                       | Description                  |
-| ---------------------------- | ---------------------------- |
-| `send_event(event, data)`    | Sends event to current state |
-| `change_state(target, data)` | Forces state change          |
-| `get_current_state()`        | Returns current state        |
-
----
-
-## 🧠 Design Philosophy
-
-This system is built to be:
-
-* **Modular** → States are independent and reusable
-* **Scalable** → Supports complex gameplay systems
-* **Safe** → Prevents invalid transitions
-* **Performant** → Designed for future C++ GDExtension port
-
----
-
-## 🎮 Example Use Cases
-
-* Player movement (Idle / Run / Jump)
-* Combat systems (Attack / Block / Hit)
-* Enemy AI behaviors
-* Animation-driven gameplay
-* Boss state orchestration
-
----
-
-## 📝 Compiling to GDExtension (Future)
-
-This system is designed with C++ porting in mind:
-
-* Uses lightweight data types (`StringName`, `Dictionary`)
-* Avoids unnecessary allocations
-* Clean separation of logic
-
-Future versions may include:
-
-* Full C++ backend
-* Editor visualization tools
-* Animation graph integration
-
----
-
-## Credits
-
-### Development
-
-Kavya Prajapati
+- Clean and simple setup in the Godot editor
+- Clear separation between engine logic and gameplay logic
+- High performance through native code
+- Fast iteration using GDScript
+- Scalable design for larger projects
 
 ---
 
 ## License
 
-This project is licensed under the MIT License
+This project is licensed under the [MIT License](LICENSE).
+
+---
+
+## Contribution
+
+Contributions, improvements, and extensions are welcome.
+
+---
+
+## Summary
+
+This FSM architecture provides a strong foundation for building responsive and maintainable gameplay systems in Godot by combining:
+
+- Native execution speed
+- Script-level flexibility
+- A clean and intuitive structure
+
+---
