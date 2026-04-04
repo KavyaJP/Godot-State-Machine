@@ -2,10 +2,8 @@ name: Build GDExtension
 
 on:
   push:
-    # Triggers release builds on version tags
     tags:
       - "v*"
-  # Allows manual triggering for testing without tagging
   workflow_dispatch:
 
 jobs:
@@ -49,34 +47,26 @@ jobs:
       - name: Install SCons
         run: pip install scons
 
-      - name: Setup Android NDK (Android Only)
-        if: matrix.platform == 'android'
-        uses: nttld/setup-ndk@v1
-        id: setup-ndk
-        with:
-          # Godot 4.x officially recommends NDK r23c
-          ndk-version: r23c
-          link-to-sdk: true
-
-      - name: Export NDK Paths (Android Only)
-        if: matrix.platform == 'android'
-        run: |
-          echo "ANDROID_NDK_ROOT=${{ steps.setup-ndk.outputs.ndk-path }}" >> $GITHUB_ENV
-          echo "ANDROID_NDK_HOME=${{ steps.setup-ndk.outputs.ndk-path }}" >> $GITHUB_ENV
-
       - name: Setup Emscripten (Web Only)
         if: matrix.platform == 'web'
         uses: mymindstorm/setup-emsdk@v14
         with:
-          # Godot 4 currently targets this specific emscripten version
           version: 3.1.39
           actions-cache-folder: "emsdk-cache"
 
       - name: Build Debug Target
+        env:
+          # This guarantees SCons cannot look at GitHub's default NDK 28
+          ANDROID_NDK_ROOT: /usr/local/lib/android/sdk/ndk/25.2.9519653
+          ANDROID_NDK_HOME: /usr/local/lib/android/sdk/ndk/25.2.9519653
         run: |
           scons platform=${{ matrix.platform }} target=template_debug arch=${{ matrix.arch }}
 
       - name: Build Release Target
+        env:
+          # This guarantees SCons cannot look at GitHub's default NDK 28
+          ANDROID_NDK_ROOT: /usr/local/lib/android/sdk/ndk/25.2.9519653
+          ANDROID_NDK_HOME: /usr/local/lib/android/sdk/ndk/25.2.9519653
         run: |
           scons platform=${{ matrix.platform }} target=template_release arch=${{ matrix.arch }}
 
