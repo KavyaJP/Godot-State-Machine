@@ -61,4 +61,4 @@ jobs:
         with:
           name: ${{ matrix.platform }}-build
           # Changed from bin/ to fsm-demo/bin/ to match SConstruct output
-          path: fsm-demo/bin/
+          path: fsm-demo/node_state_controller/bin/
