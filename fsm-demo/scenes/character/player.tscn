@@ -1,13 +1,16 @@
 [gd_scene format=3 uid="uid://bbs0a0lfi61p"]
 
+[ext_resource type="Script" uid="uid://b2bnuhngjw4vl" path="res://scenes/character/player.gd" id="1_1y732"]
 [ext_resource type="SpriteFrames" uid="uid://dqjxh3wsostdr" path="res://resources/player_sprite_frames.tres" id="1_vt0b6"]
 [ext_resource type="Script" uid="uid://deikkiu0asetl" path="res://scenes/character/idle_state.gd" id="2_tum32"]
 [ext_resource type="Script" uid="uid://dw3bighsyqjxq" path="res://scenes/character/walk_state.gd" id="3_0vjlc"]
+[ext_resource type="Script" uid="uid://sqk4rh2bcklf" path="res://scenes/character/run_state.gd" id="4_bnvp8"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_3fhya"]
 size = Vector2(12, 16)
 
 [node name="Player" type="CharacterBody2D" unique_id=457050193]
+script = ExtResource("1_1y732")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=822885951]
 position = Vector2(0, -2)
@@ -18,11 +21,20 @@ autoplay = "idle_front"
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=843599928]
 shape = SubResource("RectangleShape2D_3fhya")
 
-[node name="NodeStateController" type="NodeStateController" parent="." unique_id=963663555]
-initial_state = &"Idle"
+[node name="NodeStateController" type="NodeStateController" parent="." unique_id=963663555 node_paths=PackedStringArray("initial_node")]
+initial_node = NodePath("Idle")
 
-[node name="Idle" type="NodeState" parent="NodeStateController" unique_id=282566485]
+[node name="Idle" type="NodeState" parent="NodeStateController" unique_id=282566485 node_paths=PackedStringArray("player", "animated_sprite_2d")]
 script = ExtResource("2_tum32")
+player = NodePath("../..")
+animated_sprite_2d = NodePath("../../AnimatedSprite2D")
 
-[node name="Walk" type="NodeState" parent="NodeStateController" unique_id=1357676435]
+[node name="Walk" type="NodeState" parent="NodeStateController" unique_id=1357676435 node_paths=PackedStringArray("player", "animated_sprite_2d")]
 script = ExtResource("3_0vjlc")
+player = NodePath("../..")
+animated_sprite_2d = NodePath("../../AnimatedSprite2D")
+
+[node name="Run" type="NodeState" parent="NodeStateController" unique_id=1208761847 node_paths=PackedStringArray("player", "animated_sprite_2d")]
+script = ExtResource("4_bnvp8")
+player = NodePath("../..")
+animated_sprite_2d = NodePath("../../AnimatedSprite2D")

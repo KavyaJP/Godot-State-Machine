@@ -198,7 +198,9 @@ Contributions, improvements, and extensions are welcome.
 
 ## Credits
 
-- Huge thanks to ErisEsra's 8 Directional character templater for providing the assets for 8 characters movement for free. You can check out the assest pack [here](https://erisesra.itch.io/character-templates-pack).
+- Huge thanks to
+  - ErisEsra's character template. You can check out the assest [here](https://erisesra.itch.io/character-templates-pack).
+  - Kenney NL for monochrome tilemap. You can check out the asset [here](https://kenney.nl/assets/monochrome-rpg).
 - If you can then please donate to the artists who can make projects like this possible.
 
 ---

@@ -13,10 +13,19 @@ namespace godot
     {
         GDCLASS(NodeStateController, Node)
 
+    public:
+        enum ProcessMode
+        {
+            PROCESS_IDLE,
+            PROCESS_PHYSICS,
+            PROCESS_BOTH
+        };
+
     private:
         HashMap<StringName, NodeState *> states;
         NodeState *current_state = nullptr;
-        StringName initial_state_name;
+        NodeState *initial_node = nullptr;
+        ProcessMode process_mode = PROCESS_BOTH;
 
     protected:
         static void _bind_methods();
@@ -29,12 +38,18 @@ namespace godot
         void _process(double delta) override;
         void _physics_process(double delta) override;
 
-        void set_initial_state_name(const StringName &name);
-        StringName get_initial_state_name() const;
+        void set_initial_node(NodeState *node);
+        NodeState *get_initial_node() const;
+
+        void set_process_mode(ProcessMode mode);
+        ProcessMode get_process_mode() const;
 
         void transition_to(const StringName &state_name);
     };
 
 } // namespace godot
+
+// Required to expose the custom enum to Godot's reflection system
+VARIANT_ENUM_CAST(NodeStateController::ProcessMode);
 
 #endif // NODE_STATE_CONTROLLER_H

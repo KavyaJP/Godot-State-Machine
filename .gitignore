@@ -55,5 +55,6 @@ godot-cpp/.sconsign.dblite
 *~
 .DS_Store
 
-# Visual Studio
+# Visual Studio & Visual Studio Code
 .vs
+.vscode/
