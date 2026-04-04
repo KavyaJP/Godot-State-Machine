@@ -14,18 +14,12 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - platform: windows
-            os: windows-latest
-            arch: x86_64
           - platform: linux
             os: ubuntu-latest
             arch: x86_64
           - platform: macos
             os: macos-latest
             arch: universal
-          - platform: android
-            os: ubuntu-latest
-            arch: arm64
           - platform: ios
             os: macos-latest
             arch: arm64
@@ -55,18 +49,10 @@ jobs:
           actions-cache-folder: "emsdk-cache"
 
       - name: Build Debug Target
-        env:
-          # This guarantees SCons cannot look at GitHub's default NDK 28
-          ANDROID_NDK_ROOT: /usr/local/lib/android/sdk/ndk/25.2.9519653
-          ANDROID_NDK_HOME: /usr/local/lib/android/sdk/ndk/25.2.9519653
         run: |
           scons platform=${{ matrix.platform }} target=template_debug arch=${{ matrix.arch }}
 
       - name: Build Release Target
-        env:
-          # This guarantees SCons cannot look at GitHub's default NDK 28
-          ANDROID_NDK_ROOT: /usr/local/lib/android/sdk/ndk/25.2.9519653
-          ANDROID_NDK_HOME: /usr/local/lib/android/sdk/ndk/25.2.9519653
         run: |
           scons platform=${{ matrix.platform }} target=template_release arch=${{ matrix.arch }}
 
