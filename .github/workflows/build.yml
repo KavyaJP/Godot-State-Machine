@@ -60,4 +60,5 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.platform }}-build
-          path: bin/
+          # Changed from bin/ to fsm-demo/bin/ to match SConstruct output
+          path: fsm-demo/bin/
