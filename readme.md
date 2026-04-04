@@ -196,6 +196,13 @@ Contributions, improvements, and extensions are welcome.
 
 ---
 
+## Credits
+
+- Huge thanks to ErisEsra's 8 Directional character templater for providing the assets for 8 characters movement for free. You can check out the assest pack [here](https://erisesra.itch.io/character-templates-pack).
+- If you can then please donate to the artists who can make projects like this possible.
+
+---
+
 ## Summary
 
 This FSM architecture provides a strong foundation for building responsive and maintainable gameplay systems in Godot by combining:
