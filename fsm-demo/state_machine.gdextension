@@ -1,6 +1,6 @@
 [configuration]
 entry_symbol = "nodestate_library_init"
-compatibility_minimum = "4.2"
+compatibility_minimum = "4.5"
 
 [libraries]
 macos.debug = "res://addons/node_state_controller/bin/libstate_machine.macos.template_debug.framework"
