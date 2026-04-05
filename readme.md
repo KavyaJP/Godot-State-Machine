@@ -165,18 +165,18 @@ Player FSM
 
 ---
 
-## Performance Benchmark (Placeholder Data)
+## Performance Benchmark
 
 Because **Node State Controller** is written entirely in C++ as a GDExtension, it handles state caching, Dictionary lookups, and virtual method execution with zero script-level overhead.
 
 You can take a look at the C++ implementation in `src/` and GDScript implementation in `fsm-demo/gd_state_machine/`
 
-_Benchmark running continuous state transitions in a single frame:_
+_Benchmark running continuous 100000 state transitions:_
 
-| Implementation                | Time Taken (ms) | Speed Increase  |
-| :---------------------------- | :-------------- | :-------------- |
-| **Pure GDScript FSM**         | `2`             | 1.0x (Baseline) |
-| **C++ Node State Controller** | `1`             | **`2`x Faster** |
+| Implementation                | Time Taken (ms) | Speed Increase     |
+| :---------------------------- | :-------------- | :----------------- |
+| **Pure GDScript FSM**         | `179.33`        | 1.0x (Baseline)    |
+| **C++ Node State Controller** | `90.91`         | **`1.97`x Faster** |
 
 _(Tested on Godot 4.x - Windows 11 - Ryzen 5 9600X 6 Cores 12 Threads)_
 

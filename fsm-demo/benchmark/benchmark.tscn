@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://sbxfv3p1jgj5"]
+
+[ext_resource type="Script" uid="uid://5n2l0ekarv0a" path="res://benchmark/benchmark.gd" id="1_rngpm"]
+
+[node name="Benchmark" type="Node" unique_id=1471141844]
+script = ExtResource("1_rngpm")
