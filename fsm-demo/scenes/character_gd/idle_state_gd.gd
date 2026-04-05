@@ -1,6 +1,6 @@
-extends NodeState
+extends GDNodeState
 
-@export var player: Player
+@export var player: PlayerGD
 @export var animated_sprite_2d: AnimatedSprite2D
 
 func _on_enter():
@@ -9,9 +9,9 @@ func _on_enter():
 
 func _on_process(_delta):
 	if not InputManager.is_running() and InputManager.is_input_movement():
-		transition.emit(&"Walk")
+		transition.emit("walk")
 	if InputManager.is_running() and InputManager.is_input_movement():
-		transition.emit(&"Run")
+		transition.emit("run")
 
 func _on_physics_process(_delta: float) -> void:
 	var direction: Vector2 = player.last_direction

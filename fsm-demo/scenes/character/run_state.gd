@@ -4,13 +4,14 @@ extends NodeState
 @export var animated_sprite_2d: AnimatedSprite2D
 
 func _on_enter():
-	print("Entered Run State")
+	#print("Entered Run State")
+	pass
 
 func _on_process(_delta):
 	if not InputManager.is_running() and InputManager.is_input_movement():
 		transition.emit(&"Walk")
-	if not InputManager.is_running() and not InputManager.is_input_movement():
-		transition.emit(&"Idle")
+	if not InputManager.is_input_movement():
+		transition.emit("idle")
 
 func _on_physics_process(_delta: float) -> void:
 	var direction: Vector2 = InputManager.get_movement_direction()
@@ -26,8 +27,6 @@ func _on_physics_process(_delta: float) -> void:
 	elif direction == Vector2.RIGHT:
 		animated_sprite_2d.flip_h = false
 		animated_sprite_2d.play("run_right")
-	else:
-		animated_sprite_2d.play("run_front")
 	
 	player.velocity = direction * player.run_speed
 	player.move_and_slide()

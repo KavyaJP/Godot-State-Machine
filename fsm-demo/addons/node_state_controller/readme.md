@@ -135,6 +135,25 @@ This system supports all platforms that Godot supports, including:
 
 ---
 
+### Build Command
+
+```bash
+scons platform=<target_platform>
+```
+
+Examples:
+
+```bash
+scons platform=windows
+scons platform=linux
+```
+
+- Automatically configures the build for the target platform
+- Outputs compiled binaries to a shared bin directory
+- No code changes are required between platforms
+
+---
+
 ## Future Expansion
 
 The current implementation is a flat FSM, but it is designed to support future expansion into hierarchical state machines.
@@ -162,23 +181,6 @@ Player FSM
 - High performance through native code
 - Fast iteration using GDScript
 - Scalable design for larger projects
-
----
-
-## Performance Benchmark (Placeholder Data)
-
-Because **Node State Controller** is written entirely in C++ as a GDExtension, it handles state caching, Dictionary lookups, and virtual method execution with zero script-level overhead.
-
-You can take a look at the C++ implementation in `src/` and GDScript implementation in `fsm-demo/gd_state_machine/`
-
-_Benchmark running continuous state transitions in a single frame:_
-
-| Implementation                | Time Taken (ms) | Speed Increase  |
-| :---------------------------- | :-------------- | :-------------- |
-| **Pure GDScript FSM**         | `2`             | 1.0x (Baseline) |
-| **C++ Node State Controller** | `1`             | **`2`x Faster** |
-
-_(Tested on Godot 4.x - Windows 11 - Ryzen 5 9600X 6 Cores 12 Threads)_
 
 ---
 

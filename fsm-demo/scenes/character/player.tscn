@@ -4,10 +4,8 @@
 [ext_resource type="SpriteFrames" uid="uid://dqjxh3wsostdr" path="res://resources/player_sprite_frames.tres" id="1_vt0b6"]
 [ext_resource type="Script" uid="uid://deikkiu0asetl" path="res://scenes/character/idle_state.gd" id="2_tum32"]
 [ext_resource type="Script" uid="uid://dw3bighsyqjxq" path="res://scenes/character/walk_state.gd" id="3_0vjlc"]
+[ext_resource type="Shape2D" uid="uid://rykh7rmm8sr7" path="res://resources/character_collision_shape.tres" id="3_erpy8"]
 [ext_resource type="Script" uid="uid://sqk4rh2bcklf" path="res://scenes/character/run_state.gd" id="4_bnvp8"]
-
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_3fhya"]
-size = Vector2(12, 16)
 
 [node name="Player" type="CharacterBody2D" unique_id=457050193]
 script = ExtResource("1_1y732")
@@ -19,7 +17,7 @@ animation = &"idle_front"
 autoplay = "idle_front"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=843599928]
-shape = SubResource("RectangleShape2D_3fhya")
+shape = ExtResource("3_erpy8")
 
 [node name="NodeStateController" type="NodeStateController" parent="." unique_id=963663555 node_paths=PackedStringArray("initial_node")]
 initial_node = NodePath("Idle")

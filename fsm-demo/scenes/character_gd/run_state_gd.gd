@@ -1,34 +1,34 @@
-extends NodeState
+extends GDNodeState
 
-@export var player: Player
+@export var player: PlayerGD
 @export var animated_sprite_2d: AnimatedSprite2D
 
 func _on_enter():
-	#print("Entered Walk State")
+	#print("Entered Run State")
 	pass
 
 func _on_process(_delta):
+	if not InputManager.is_running() and InputManager.is_input_movement():
+		transition.emit("walk")
 	if not InputManager.is_input_movement():
-		transition.emit(&"Idle")
-	if InputManager.is_running() and InputManager.is_input_movement():
-		transition.emit(&"Run")
+		transition.emit("idle")
 
 func _on_physics_process(_delta: float) -> void:
 	var direction: Vector2 = InputManager.get_movement_direction()
 	player.last_direction = direction
 	
 	if direction == Vector2.DOWN:
-		animated_sprite_2d.play("walk_front")
+		animated_sprite_2d.play("run_front")
 	elif direction == Vector2.UP:
-		animated_sprite_2d.play("walk_back")
+		animated_sprite_2d.play("run_back")
 	elif direction == Vector2.LEFT:
 		animated_sprite_2d.flip_h = true
-		animated_sprite_2d.play("walk_right")
+		animated_sprite_2d.play("run_right")
 	elif direction == Vector2.RIGHT:
 		animated_sprite_2d.flip_h = false
-		animated_sprite_2d.play("walk_right")
+		animated_sprite_2d.play("run_right")
 	
-	player.velocity = direction * player.speed
+	player.velocity = direction * player.run_speed
 	player.move_and_slide()
 
 func _on_exit() -> void:

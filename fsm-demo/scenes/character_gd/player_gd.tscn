@@ -1,0 +1,40 @@
+[gd_scene format=3 uid="uid://cxjaxwp7wwtx7"]
+
+[ext_resource type="Script" uid="uid://di0xr2bxme1x6" path="res://scenes/character_gd/player_gd.gd" id="1_d05k4"]
+[ext_resource type="SpriteFrames" uid="uid://dqjxh3wsostdr" path="res://resources/player_sprite_frames.tres" id="2_k8sb5"]
+[ext_resource type="Shape2D" uid="uid://rykh7rmm8sr7" path="res://resources/character_collision_shape.tres" id="3_4y8ii"]
+[ext_resource type="Script" uid="uid://dtacib1wlr2mg" path="res://scripts/gd_state_machine/node_state_machine.gd" id="4_fya7o"]
+[ext_resource type="Script" uid="uid://d38gfc4kbtyru" path="res://scenes/character_gd/idle_state_gd.gd" id="5_583me"]
+[ext_resource type="Script" uid="uid://yiehbdil4ub6" path="res://scenes/character_gd/walk_state_gd.gd" id="6_xb3n5"]
+[ext_resource type="Script" uid="uid://cmy0t53nwtq3w" path="res://scenes/character_gd/run_state_gd.gd" id="7_geobb"]
+
+[node name="PlayerGd" type="CharacterBody2D" unique_id=885907168]
+script = ExtResource("1_d05k4")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=257886143]
+position = Vector2(0, -2)
+sprite_frames = ExtResource("2_k8sb5")
+animation = &"idle_front"
+autoplay = "idle_front"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1212766192]
+shape = ExtResource("3_4y8ii")
+
+[node name="GDStateMachine" type="Node" parent="." unique_id=1754727323 node_paths=PackedStringArray("initial_node_state")]
+script = ExtResource("4_fya7o")
+initial_node_state = NodePath("Idle")
+
+[node name="Idle" type="Node" parent="GDStateMachine" unique_id=94490925 node_paths=PackedStringArray("player", "animated_sprite_2d")]
+script = ExtResource("5_583me")
+player = NodePath("../..")
+animated_sprite_2d = NodePath("../../AnimatedSprite2D")
+
+[node name="Walk" type="Node" parent="GDStateMachine" unique_id=544151148 node_paths=PackedStringArray("player", "animated_sprite_2d")]
+script = ExtResource("6_xb3n5")
+player = NodePath("../..")
+animated_sprite_2d = NodePath("../../AnimatedSprite2D")
+
+[node name="Run" type="Node" parent="GDStateMachine" unique_id=2137883521 node_paths=PackedStringArray("player", "animated_sprite_2d")]
+script = ExtResource("7_geobb")
+player = NodePath("../..")
+animated_sprite_2d = NodePath("../../AnimatedSprite2D")
