@@ -169,7 +169,7 @@ Player FSM
 
 Because **Node State Controller** is written entirely in C++ as a GDExtension, it handles state caching, Dictionary lookups, and virtual method execution with zero script-level overhead.
 
-You can take a look at the C++ implementation in `src/` and GDScript implementation in `fsm-demo/gd_state_machine/`
+You can take a look at the C++ implementation in `src/` and GDScript implementation in `fsm-demo/scripts/gd_state_machine/` and a look at the benchmark script in `fsm-demo/benchmark`
 
 _Benchmark running continuous 100000 state transitions:_
 
