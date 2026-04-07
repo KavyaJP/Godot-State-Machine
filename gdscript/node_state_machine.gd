@@ -1,18 +1,18 @@
-class_name GDNodeStateMachine
+class_name NodeStateController
 extends Node
 
 # Definition of the signal used to notify the other components for changing of the state
-signal state_changed(old_state: GDNodeState, new_state: GDNodeState)
+signal state_changed(old_state: NodeState, new_state: NodeState)
 
-@export var initial_node_state : GDNodeState 
+@export var initial_node_state : NodeState 
 
 var node_states : Dictionary = {}
-var current_node_state : GDNodeState 
+var current_node_state : NodeState 
 var current_node_state_name : StringName # Changed to StringName for fast comparison
 
 func _ready() -> void:
 	for child in get_children():
-		if child is GDNodeState: 
+		if child is NodeState: 
 			# Cache the state using StringName exactly as it's spelled
 			var state_name = StringName(child.name)
 			node_states[state_name] = child

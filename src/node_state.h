@@ -19,11 +19,17 @@ namespace godot
         NodeState();
         ~NodeState();
 
-        // Exposing hooks to GDScript to allow logic overriding without string-based reflection
+        // Exposing hooks to GDScript to allow logic overriding
         GDVIRTUAL0(_on_enter)
         GDVIRTUAL0(_on_exit)
         GDVIRTUAL1(_on_process, double)
         GDVIRTUAL1(_on_physics_process, double)
+
+        // Fast C++ wrappers to invoke the virtual methods
+        void enter();
+        void exit();
+        void process(double delta);
+        void physics_process(double delta);
     };
 
 } // namespace godot

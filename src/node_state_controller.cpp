@@ -92,7 +92,7 @@ void NodeStateController::_process(double delta)
 
     if (process_mode == PROCESS_IDLE || process_mode == PROCESS_BOTH)
     {
-        current_state->call("_on_process", delta);
+        current_state->process(delta); // Extremely fast C++ call
     }
 }
 
@@ -105,7 +105,7 @@ void NodeStateController::_physics_process(double delta)
 
     if (process_mode == PROCESS_PHYSICS || process_mode == PROCESS_BOTH)
     {
-        current_state->call("_on_physics_process", delta);
+        current_state->physics_process(delta); // Extremely fast C++ call
     }
 }
 
@@ -126,16 +126,15 @@ void NodeStateController::transition_to(const StringName &state_name)
 
     if (current_state)
     {
-        current_state->call("_on_exit");
+        current_state->exit(); // Extremely fast C++ call
     }
 
     current_state = states[state_name];
 
     if (current_state)
     {
-        current_state->call("_on_enter");
+        current_state->enter(); // Extremely fast C++ call
     }
 
-    // Broadcast the change to external systems (e.g., UI, AnimationTree)
     emit_signal("state_changed", old_state, current_state);
 }

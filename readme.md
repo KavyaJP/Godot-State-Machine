@@ -1,99 +1,115 @@
 # GDExtension FSM Architecture
 
-A high-performance, reusable Finite State Machine (FSM) architecture for Godot using GDExtension (C++) and GDScript.
+A reusable Finite State Machine (FSM) architecture for Godot, designed for flexibility, clarity, and performance-conscious usage.
+
+---
+
+## Table of Contents
+
+- [GDExtension FSM Architecture](#gdextension-fsm-architecture)
+  - [Table of Contents](#table-of-contents)
+  - [Overview](#overview)
+  - [Architecture](#architecture)
+  - [Components](#components)
+  - [Core Principles](#core-principles)
+  - [Workflow](#workflow)
+    - [1. Add Controller](#1-add-controller)
+    - [2. Add States](#2-add-states)
+    - [3. Set Initial State](#3-set-initial-state)
+    - [4. Write State Logic](#4-write-state-logic)
+  - [Performance Design](#performance-design)
+  - [Performance](#performance)
+    - [Benchmark](#benchmark)
+  - [Implementation](#implementation)
+  - [When to Use What](#when-to-use-what)
+    - [Use **GDScript FSM** if:](#use-gdscript-fsm-if)
+    - [Use **C++ GDExtension FSM** if:](#use-c-gdextension-fsm-if)
+  - [Future Expansion](#future-expansion)
+  - [Build System](#build-system)
+  - [Key Benefits](#key-benefits)
+  - [License](#license)
+  - [Contribution](#contribution)
+  - [Credits](#credits)
 
 ---
 
 ## Overview
 
-This system is designed to combine:
+This system provides a clean and scalable FSM architecture built around two interchangeable implementations:
 
-- C++ performance for core systems such as state management, memory handling, and execution flow
-- GDScript flexibility for fast and intuitive gameplay logic
+- **C++ (GDExtension)** → Best when states are also written in C++
+- **GDScript** → Best when states are written in GDScript
 
-The architecture follows a simple flat hierarchy consisting of:
-
-- A single Controller node
-- Multiple State nodes as its children
-
-This design keeps the system easy to use, scalable, and efficient.
+The goal is not just performance — but **choosing the right tool for your workflow**.
 
 ---
 
-## Architecture Summary
+## Architecture
 
-| Component           | Responsibility                          |
-| ------------------- | --------------------------------------- |
-| NodeState           | Base class for all states               |
-| NodeStateController | Manages state transitions and execution |
+The system follows a **flat FSM design**:
+
+- A single **Controller node**
+- Multiple **State nodes** as direct children
+
+This keeps the structure:
+
+- Easy to reason
+- Fast to iterate
+- Simple to debug
 
 ---
 
-## Core Concepts
+## Components
+
+| Component           | Responsibility                       |
+| ------------------- | ------------------------------------ |
+| NodeState           | Base class for all states            |
+| NodeStateController | Handles transitions and active state |
+
+---
+
+## Core Principles
 
 - Only one state is active at a time
-- All states are direct children of the controller
-- State transitions are handled using signals
-- State lookup is optimized internally for fast switching
+- States are self-contained
+- Transitions are signal-driven
+- The controller owns execution flow
 
 ---
 
-## Core Classes
+## Workflow
 
-### NodeState
+### 1. Add Controller
 
-The base class that all states extend.
+Attach a `NodeStateController` to your entity:
 
-- Acts as the interface between the engine and your gameplay logic
-- Designed to be extended in GDScript
-- Provides lifecycle hooks for entering, exiting, and updating states
-
-Each state is responsible only for its own behavior.
-
----
-
-### NodeStateController
-
-The central manager of the FSM.
-
-- Keeps track of all available states
-- Controls which state is currently active
-- Handles transitions between states
-- Ensures only the active state is updated
+```
+Player
+ └── NodeStateController
+```
 
 ---
 
-## Developer Workflow
+### 2. Add States
 
-### 1. Scene Setup
+Add child nodes extending `NodeState`:
 
-- Add a NodeStateController to your entity (player, enemy, etc.)
-
----
-
-### 2. Create States
-
-- Add child Node nodes under the controller
-- Attach scripts that extend NodeState
-
-Example state names:
-
-- Idle
-- Walk
-- Jump
+```
+NodeStateController
+ ├── Idle
+ ├── Walk
+ └── Jump
+```
 
 ---
 
-### 3. Assign Initial State
+### 3. Set Initial State
 
-- Select the controller node
-- Assign the initial state using the Inspector
+Choose the starting state for `NodeStateController` via the Inspector.
 
 ---
 
-### 4. Implement State Logic
-
-Example:
+### 4. Write State Logic
 
 ```gdscript
 extends NodeState
@@ -105,26 +121,77 @@ func _on_physics_process(delta):
         transition.emit(&"idle")
 ```
 
-States emit a transition signal to request a change. The controller handles the switch automatically.
+States request transitions — the controller handles them.
 
 ---
 
 ## Performance Design
 
-- Only the active state is processed at runtime
-- No unnecessary updates on inactive states
-- Fast state switching through internal caching
-- Designed to scale efficiently for complex behaviors
+- Only the active state is processed
+- No updates on inactive states
+- Cached state lookup for fast transitions
+- Minimal runtime overhead
 
 ---
 
-## Build System (SCons)
+## Performance
 
-The project uses SCons for building the GDExtension.
+Benchmark results revealed a critical insight:
 
-### Platform Support
+> **Mixing C++ controllers with GDScript states introduces interop overhead**
 
-This system supports all platforms that Godot supports, including:
+### Benchmark
+
+- 2 Transitions done 100,000 times
+
+| Implementation                  | Time (ms) | Relative Speed |
+| ------------------------------- | --------- | -------------- |
+| Pure GDScript FSM               | `48.53`   | `1.0x`         |
+| Compiled C++ + GDScript (Mixed) | `58.11`   | `0.83x`        |
+
+_(Benchmarked on Ryzen 5 9600X - Windows 11)_
+
+---
+
+## Implementation
+
+- **C++ Implementation:** [`/src/`](src/)
+- **GDScript Implementation:** [`/gdscript/`](gdscript/)
+
+---
+
+## When to Use What
+
+### Use **GDScript FSM** if:
+
+- Your states are written in GDScript
+- You want fastest iteration
+- You want better performance in script-heavy logic
+
+### Use **C++ GDExtension FSM** if:
+
+- Your states are written in C++
+- You want full native performance
+- You are building large-scale or system-heavy logic
+
+---
+
+## Future Expansion
+
+The system is designed to evolve into a **Hierarchical FSM (HFSM)**:
+
+```
+Player FSM
+ └── Combat (Controller)
+      ├── Attack
+      └── Defend
+```
+
+---
+
+## Build System
+
+Built using **SCons**, compatible with all Godot-supported platforms:
 
 - Windows
 - Linux
@@ -135,66 +202,23 @@ This system supports all platforms that Godot supports, including:
 
 ---
 
-## Future Expansion
-
-The current implementation is a flat FSM, but it is designed to support future expansion into hierarchical state machines.
-
-This would allow:
-
-- State machines inside other state machines
-- More complex and modular behavior systems
-
-Example structure:
-
-```
-Player FSM
- └── Combat State (Controller)
-      ├── Attack
-      ├── Defend
-```
-
----
-
 ## Key Benefits
 
-- Clean and simple setup in the Godot editor
-- Clear separation between engine logic and gameplay logic
-- High performance through native code
-- Fast iteration using GDScript
-- Scalable design for larger projects
-
----
-
-## Performance Benchmark
-
-Because **Node State Controller** is written entirely in C++ as a GDExtension, it handles state caching, Dictionary lookups, and virtual method execution with zero script-level overhead.
-
-You can take a look at the C++ implementation in `src/` and GDScript implementation in `fsm-demo/scripts/gd_state_machine/` and a look at the benchmark script in `fsm-demo/benchmark`
-
-_Benchmark running continuous 100000 state transitions:_
-
-| Implementation                | Time Taken (ms) | Speed Increase     |
-| :---------------------------- | :-------------- | :----------------- |
-| **Pure GDScript FSM**         | `48.23`         | 1.0x (Baseline)    |
-| **C++ Node State Controller** | `89.16`         | **`0.54`x Faster** |
-
-_(Tested on Godot 4.x - Windows 11 - Ryzen 5 9600X 6 Cores 12 Threads)_
-
-### Future Enhancment
-
-- Optimise C++ as much as possible for better performance
+- Clean editor workflow
+- Clear separation of logic
+- Flexible implementation choices
 
 ---
 
 ## License
 
-This project is licensed under the [MIT License](LICENSE).
+The Project is Licensed under [MIT License](LICENSE).
 
 ---
 
 ## Contribution
 
-Contributions, improvements, and extensions are welcome.
+Contributions and improvements are welcome.
 
 ---
 
@@ -203,16 +227,4 @@ Contributions, improvements, and extensions are welcome.
 - Huge thanks to
   - ErisEsra's character template. You can check out the assest [here](https://erisesra.itch.io/character-templates-pack).
   - Kenney NL for monochrome tilemap. You can check out the asset [here](https://kenney.nl/assets/monochrome-rpg).
-- If you can then please donate to the artists who can make projects like this possible.
-
----
-
-## Summary
-
-This FSM architecture provides a strong foundation for building responsive and maintainable gameplay systems in Godot by combining:
-
-- Native execution speed
-- Script-level flexibility
-- A clean and intuitive structure
-
----
+- **If you can then please donate to the artists who can make projects like this possible.**
