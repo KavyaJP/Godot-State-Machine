@@ -31,8 +31,8 @@ func benchmark_gdscript_fsm() -> void:
 	var start_time = Time.get_ticks_usec()
 	
 	for i in range(ITERATIONS):
-		fsm.transition_to("stateb")
-		fsm.transition_to("statea")
+		fsm.transition_to(&"stateB")
+		fsm.transition_to(&"stateA")
 		
 	var end_time = Time.get_ticks_usec()
 	var time_taken_ms = (end_time - start_time) / 1000.0

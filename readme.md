@@ -175,10 +175,14 @@ _Benchmark running continuous 100000 state transitions:_
 
 | Implementation                | Time Taken (ms) | Speed Increase     |
 | :---------------------------- | :-------------- | :----------------- |
-| **Pure GDScript FSM**         | `179.33`        | 1.0x (Baseline)    |
-| **C++ Node State Controller** | `90.91`         | **`1.97`x Faster** |
+| **Pure GDScript FSM**         | `48.23`         | 1.0x (Baseline)    |
+| **C++ Node State Controller** | `89.16`         | **`0.54`x Faster** |
 
 _(Tested on Godot 4.x - Windows 11 - Ryzen 5 9600X 6 Cores 12 Threads)_
+
+### Future Enhancment
+
+- Optimise C++ as much as possible for better performance
 
 ---
 
